@@ -4,21 +4,14 @@ const { successResponse, errorResponse } = require("../utils/responseHelper");
 // ✅ 1️⃣ Create KYC Record
 exports.createKYC = async (req, res) => {
   try {
-    const { customerId, address, panNumber, aadhaarNumber, panPhoto, aadhaarPhoto } = req.body;
+    const { customerId, address, panNumber, aadhaarNumber } = req.body;
 
     // Check if KYC already exists
     const existingKYC = await KYC.findOne({ customerId });
     if (existingKYC) return errorResponse(res, "KYC record already exists", 400);
 
     // Create new KYC record
-    const kyc = await KYC.create({
-      customerId,
-      address,
-      panNumber,
-      aadhaarNumber,
-      panPhoto,
-      aadhaarPhoto
-    });
+    const kyc = await KYC.create({ customerId, address, panNumber, aadhaarNumber });
 
     return successResponse(res, kyc, "KYC record created successfully", 201);
   } catch (error) {
@@ -44,15 +37,15 @@ exports.getKYCByCustomer = async (req, res) => {
 exports.updateKYCStatus = async (req, res) => {
   try {
     const { customerId } = req.params;
-    const { kycStatus } = req.body;
+    const { status } = req.body;
 
-    if (!["pending", "verified", "rejected"].includes(kycStatus)) {
+    if (!["pending", "verified", "rejected"].includes(status)) {
       return errorResponse(res, "Invalid KYC status", 400);
     }
 
     const updatedKYC = await KYC.findOneAndUpdate(
       { customerId },
-      { kycStatus },
+      { status },
       { new: true }
     );
 
@@ -63,3 +56,4 @@ exports.updateKYCStatus = async (req, res) => {
     return errorResponse(res, error.message, 500);
   }
 };
+

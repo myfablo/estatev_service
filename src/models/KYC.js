@@ -6,12 +6,7 @@ const kycSchema = new mongoose.Schema(
     address: { type: String, required: true },
     panNumber: { type: String, required: true, unique: true },
     aadhaarNumber: { type: String, required: true, unique: true },
-    panPhoto: { type: String, required: true }, // URL to PAN photo
-    aadhaarPhoto: {
-      front: { type: String, required: true }, // URL to Aadhaar front
-      back: { type: String, required: true }   // URL to Aadhaar back
-    },
-    kycStatus: { type: String, enum: ["pending", "verified", "rejected"], default: "pending" },
+    status: { type: String, enum: ["pending", "verified", "rejected"], default: "pending" }
   },
   { timestamps: true }
 );
