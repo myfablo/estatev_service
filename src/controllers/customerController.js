@@ -35,6 +35,40 @@ exports.createCustomer = async (req, res) => {
     }
   };
 
+  // ✅ Get All Customers
+exports.getAllCustomers = async (req, res) => {
+  try {
+    const customers = await Customer.find().sort({ createdAt: -1 }); // Sort by newest first
+
+    if (!customers.length) {
+      return errorResponse(res, "No customers found", 404);
+    }
+
+    return successResponse(res, customers, "Customers retrieved successfully");
+  } catch (error) {
+    return errorResponse(res, error.message, 500);
+  }
+};
+
+// ✅ Get Customers with Active Investments
+exports.getCustomersWithActiveInvestments = async (req, res) => {
+  try {
+    // ✅ Find all unique customerIds with active investments
+    const activeInvestmentCustomers = await Investment.distinct("customerId", { status: "active" });
+
+    if (!activeInvestmentCustomers.length) {
+      return errorResponse(res, "No customers with active investments found", 404);
+    }
+
+    // ✅ Fetch customers with those IDs
+    const customers = await Customer.find({ _id: { $in: activeInvestmentCustomers } });
+
+    return successResponse(res, customers, "Customers with active investments retrieved successfully");
+  } catch (error) {
+    return errorResponse(res, error.message, 500);
+  }
+};
+
 // ✅ 2️⃣ Get Customer Details by ID
 exports.getCustomerById = async (req, res) => {
   try {
